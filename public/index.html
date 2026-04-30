@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Mon Générateur QR PDF</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            text-align: center;
+            padding: 50px;
+            background: #f4f7f6;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+        }
+
+        #result {
+            margin-top: 20px;
+            display: none;
+        }
+
+        img {
+            width: 200px;
+            margin: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <h1>Générateur de QR Code PDF</h1>
+        <input type="file" id="pdfFile" accept="application/pdf">
+        <button onclick="uploadFile()">Générer le QR Code</button>
+
+        <div id="result">
+            <h3>Votre QR Code est prêt !</h3>
+            <img id="qrImage" src="" alt="QR Code">
+            <button id="downloadBtn"
+                style="display:none; margin-top: 10px; background-color: #f39c12; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px;">
+                Télécharger le QR Code
+            </button>
+            <p><a id="pdfLink" href="#" target="_blank">Ouvrir le document dans le lecteur</a></p>
+        </div>
+    </div>
+    <div id="result">
+        <h3>Votre QR Code est prêt !</h3>
+        <img id="qrImage" src="" alt="QR Code" style="max-width: 200px;"><br>
+
+        <button id="downloadBtn" style="margin-top:10px; display:none;">Télécharger le QR Code</button>
+    </div>
+
+    <script>
+        async function uploadFile() {
+            const fileInput = document.getElementById('pdfFile');
+            const resultDiv = document.getElementById('result');
+            const qrImgElement = document.getElementById('qrImage');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const pdfLink = document.getElementById('pdfLink');
+
+            if (!fileInput || !fileInput.files[0]) {
+                alert("Veuillez choisir un fichier PDF");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('pdf', fileInput.files[0]);
+
+            try {
+                const response = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // 1. Afficher le QR Code
+                    if (qrImgElement) qrImgElement.src = data.qrImage;
+
+                    // 2. Configurer le lien du lecteur
+                    if (pdfLink) pdfLink.href = data.viewerUrl;
+
+                    // 3. Afficher les blocs de résultat
+                    if (resultDiv) resultDiv.style.display = 'block';
+                    if (downloadBtn) {
+                        downloadBtn.style.display = 'inline-block';
+
+                        // 4. Logique de téléchargement
+                        downloadBtn.onclick = function () {
+                            const link = document.createElement('a');
+                            link.href = data.qrImage;
+                            link.download = 'QR_CODE_ETRIBCOM.png';
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                        };
+                    }
+                } else {
+                    alert("Erreur lors de la génération : " + (data.error || "inconnue"));
+                }
+            } catch (error) {
+                console.error("Erreur:", error);
+                alert("Impossible de contacter le serveur");
+            }
+        }
+    </script>
+</body>
+
+</html>
