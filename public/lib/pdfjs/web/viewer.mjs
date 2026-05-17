@@ -20220,6 +20220,32 @@ if (document.readyState === "interactive" || document.readyState === "complete")
   document.addEventListener("DOMContentLoaded", webViewerLoad, true);
 }
 
+
 export { PDFViewerApplication, AppConstants as PDFViewerApplicationConstants, AppOptions as PDFViewerApplicationOptions };
+const addWatermark = (pageNode) => {
+  if (pageNode.querySelector('.custom-wm-brand')) return;
+  
+  const wm = document.createElement('div');
+  wm.className = 'custom-wm-brand';
+  wm.textContent = 'COPIE E-TRIBCOM';
+  pageNode.appendChild(wm);
+};
+
+// On surveille le chargement dynamique des pages
+const observer = new MutationObserver((mutations) => {
+  for (const mutation of mutations) {
+    for (const node of mutation.addedNodes) {
+      if (node.nodeType === 1) {
+        if (node.classList.contains('page')) addWatermark(node);
+        node.querySelectorAll('.page').forEach(addWatermark);
+      }
+    }
+  }
+});
+
+const viewer = document.getElementById('viewer');
+if (viewer) {
+  observer.observe(viewer, { childList: true, subtree: true });
+}
 
 //# sourceMappingURL=viewer.mjs.map
