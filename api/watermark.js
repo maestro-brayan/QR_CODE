@@ -10,7 +10,7 @@
 const DIAGONAL = {
     text          : 'COPIE E-TRIBCOM',
     fontSize      : 74,
-    letterSpacing : 6,      // espacement entre chaque lettre (en points)
+    letterSpacing : 10,      // espacement entre chaque lettre (en points)
     color         : '#312f2f',
     opacity       : 0.18,
 };

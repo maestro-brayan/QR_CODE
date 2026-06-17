@@ -117,6 +117,33 @@
         }
         .wm-info strong { color: var(--orange); font-family: 'IBM Plex Mono', monospace; }
 
+        /* ── PÉRIODE (selects mois/année) ── */
+        .periode-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 28px;
+        }
+        .select-field {
+            flex: 1;
+            background: var(--dark);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: clamp(11px, 3vw, 14px) 12px;
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: clamp(0.82rem, 2.5vw, 0.92rem);
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .select-field:focus {
+            outline: none;
+            border-color: var(--orange);
+        }
+        .select-field option {
+            background: var(--mid);
+            color: var(--text);
+        }
+
         /* ── BOUTON ── */
         .btn {
             display: block;
@@ -234,8 +261,32 @@
         <div class="filename" id="filename"></div>
     </div>
 
-    <!-- SECTION 2 : INFO FILIGRANE -->
-    <div class="section-title">② Filigrane appliqué automatiquement</div>
+    <!-- SECTION 2 : PÉRIODE -->
+    <div class="section-title">② Période du document</div>
+
+    <div class="periode-row">
+        <select id="periodeMois" class="select-field">
+            <option value="">Mois</option>
+            <option value="01">Janvier</option>
+            <option value="02">Février</option>
+            <option value="03">Mars</option>
+            <option value="04">Avril</option>
+            <option value="05">Mai</option>
+            <option value="06">Juin</option>
+            <option value="07">Juillet</option>
+            <option value="08">Août</option>
+            <option value="09">Septembre</option>
+            <option value="10">Octobre</option>
+            <option value="11">Novembre</option>
+            <option value="12">Décembre</option>
+        </select>
+        <select id="periodeAnnee" class="select-field">
+            <option value="">Année</option>
+        </select>
+    </div>
+
+    <!-- SECTION 3 : INFO FILIGRANE -->
+    <div class="section-title">③ Filigrane appliqué automatiquement</div>
 
     <div class="wm-info">
         Chaque document reçoit automatiquement :<br>
@@ -245,7 +296,7 @@
 
     <!-- BOUTON PRINCIPAL -->
     <button class="btn btn-primary" onclick="uploadFile()">
-        🚀 Générer le QR Code
+         Générer le QR Code
     </button>
 
     <div class="spinner" id="spinner"></div>
@@ -268,6 +319,20 @@
 <script>
     let currentQRDataUrl = '';
 
+    function populateAnnees() {
+        const select     = document.getElementById('periodeAnnee');
+        const anneeActuelle = new Date().getFullYear();
+        // Quelques années avant et après l'année en cours, par sécurité
+        for (let a = anneeActuelle - 50; a <= anneeActuelle + 1; a++) {
+            const opt = document.createElement('option');
+            opt.value = String(a);
+            opt.textContent = String(a);
+            if (a === anneeActuelle) opt.selected = true;
+            select.appendChild(opt);
+        }
+    }
+    populateAnnees();
+
     function onFileChange(input) {
         const file = input.files[0];
         const el   = document.getElementById('filename');
@@ -287,8 +352,17 @@
             return;
         }
 
+        const mois  = document.getElementById('periodeMois').value;
+        const annee = document.getElementById('periodeAnnee').value;
+        if (!mois || !annee) {
+            alert('Veuillez sélectionner le mois et l\'année du document.');
+            return;
+        }
+        const periode = `${mois}-${annee}`;
+
         const formData = new FormData();
         formData.append('pdf', fileInput.files[0]);
+        formData.append('periode', periode);
 
         setLoading(true);
         document.getElementById('result').style.display = 'none';

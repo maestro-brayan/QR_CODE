@@ -11,18 +11,38 @@ const upload = multer({ storage: multer.memoryStorage() });
 app.use(express.static(path.join(__dirname, '../public')));
 app.use(express.json());
 
+/* ── Validation du champ "periode" (MM-YYYY ou MM/YYYY) ── */
+function parsePeriode(periode) {
+    if (!periode || typeof periode !== 'string') return null;
+
+    const match = periode.trim().match(/^(\d{1,2})[\/\-](\d{4})$/);
+    if (!match) return null;
+
+    const mois  = parseInt(match[1], 10);
+    const annee = parseInt(match[2], 10);
+    const anneeActuelle = new Date().getFullYear();
+
+    if (mois < 1 || mois > 12) return null;
+    if (annee < 1970 || annee > anneeActuelle) return null;
+
+    return { mm: String(mois).padStart(2, '0'), yyyy: String(annee) };
+}
+
 /* ── Upload + filigrane + QR Code ── */
 app.post('/api/upload', upload.single('pdf'), async (req, res) => {
     try {
         if (!req.file) return res.status(400).json({ error: 'Pas de fichier' });
 
+        const periode = parsePeriode(req.body.periode);
+        if (!periode) {
+            return res.status(400).json({ error: 'Période invalide. Format attendu: MM-YYYY ou MM/YYYY' });
+        }
+        const { mm, yyyy } = periode;
+
         // Appliquer le filigrane (paramètres fixés dans watermark.js)
         const pdfBuffer = await applyWatermark(req.file.buffer);
 
         // Nom unique
-        const now      = new Date();
-        const mm       = String(now.getMonth() + 1).padStart(2, '0');
-        const yyyy     = now.getFullYear();
         const baseName = req.file.originalname.replace(/\.[^/.]+$/, '').replace(/[^a-z0-9]/gi, '_');
         const suffix   = Date.now().toString(36).slice(-4);
         const fileName = `CI-ABJ-${mm}-${yyyy}-${baseName}-${suffix}.pdf`;
