@@ -9,17 +9,17 @@
 
 const DIAGONAL = {
     text          : 'COPIE E-TRIBCOM',
-    fontSize      : 74,
-    letterSpacing : 10,      // espacement entre chaque lettre (en points)
+    fontSize      : 65,
+    letterSpacing : 20,      // espacement entre chaque lettre (en points)
     color         : '#312f2f',
     opacity       : 0.18,
 };
 
 const VERTICAL = {
-    text     : 'DUPLICATA',
-    fontSize : 60,
-    color    : '#b0b0b0',
-    opacity  : 0.12,
+    text     : 'COPIE HARMONISEE',
+    fontSize : 65,
+    color    : '#999696',
+    opacity  : 0.14,
 };
 
 /* ── Ne pas modifier en dessous ── */
@@ -89,7 +89,7 @@ async function applyWatermark(pdfBuffer) {
 
         /* ── DIAGONAL : BlippoBlack + letter spacing, 45° centre page ── */
         const dRgb    = hexToRgb(DIAGONAL.color);
-        const angleRad = Math.PI / 4;  // 45°
+        const angleRad = 50 * Math.PI / 180;  // 45°
         const totalW  = textWidthWithSpacing(fontDiag, DIAGONAL.text, DIAGONAL.fontSize, DIAGONAL.letterSpacing);
         const cx      = width  / 2;
         const cy      = height / 2;
