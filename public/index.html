@@ -1,23 +1,34 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Générateur QR PDF – E-TRIBCOM</title>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600&display=swap"
+        rel="stylesheet">
     <style>
         :root {
             --orange: #f39c12;
-            --dark:   #1a1a2e;
-            --mid:    #16213e;
-            --text:   #e0e0e0;
-            --muted:  #a0a0b0;
-            --border: rgba(243,156,18,0.25);
+            --dark: #1a1a2e;
+            --mid: #16213e;
+            --text: #e0e0e0;
+            --muted: #a0a0b0;
+            --border: rgba(243, 156, 18, 0.25);
         }
 
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-        html { font-size: 16px; }
+        html {
+            font-size: 16px;
+        }
 
         body {
             font-family: 'IBM Plex Sans', sans-serif;
@@ -36,12 +47,14 @@
             margin-bottom: clamp(24px, 5vw, 40px);
             width: 100%;
         }
+
         header h1 {
             font-family: 'IBM Plex Mono', monospace;
             font-size: clamp(1.1rem, 4vw, 1.7rem);
             color: var(--orange);
             letter-spacing: 3px;
         }
+
         header p {
             color: var(--muted);
             font-size: clamp(0.75rem, 2.5vw, 0.88rem);
@@ -56,7 +69,7 @@
             padding: clamp(20px, 5vw, 36px);
             width: 100%;
             max-width: 540px;
-            box-shadow: 0 8px 40px rgba(0,0,0,0.45);
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.45);
         }
 
         /* ── SECTION TITLE ── */
@@ -83,8 +96,13 @@
             margin-bottom: 28px;
             -webkit-tap-highlight-color: transparent;
         }
+
         .upload-zone:hover,
-        .upload-zone:focus-within { border-color: var(--orange); background: rgba(243,156,18,0.04); }
+        .upload-zone:focus-within {
+            border-color: var(--orange);
+            background: rgba(243, 156, 18, 0.04);
+        }
+
         .upload-zone input {
             position: absolute;
             inset: 0;
@@ -93,8 +111,18 @@
             width: 100%;
             height: 100%;
         }
-        .upload-icon { font-size: clamp(1.8rem, 6vw, 2.4rem); margin-bottom: 10px; }
-        .upload-zone p { color: var(--muted); font-size: clamp(0.78rem, 2.5vw, 0.88rem); line-height: 1.5; }
+
+        .upload-icon {
+            font-size: clamp(1.8rem, 6vw, 2.4rem);
+            margin-bottom: 10px;
+        }
+
+        .upload-zone p {
+            color: var(--muted);
+            font-size: clamp(0.78rem, 2.5vw, 0.88rem);
+            line-height: 1.5;
+        }
+
         .filename {
             display: none;
             margin-top: 10px;
@@ -106,7 +134,7 @@
 
         /* ── INFO FILIGRANE ── */
         .wm-info {
-            background: rgba(243,156,18,0.07);
+            background: rgba(243, 156, 18, 0.07);
             border: 1px solid var(--border);
             border-radius: 10px;
             padding: 12px 16px;
@@ -115,7 +143,11 @@
             color: var(--muted);
             line-height: 1.6;
         }
-        .wm-info strong { color: var(--orange); font-family: 'IBM Plex Mono', monospace; }
+
+        .wm-info strong {
+            color: var(--orange);
+            font-family: 'IBM Plex Mono', monospace;
+        }
 
         /* ── PÉRIODE (selects mois/année) ── */
         .periode-row {
@@ -123,6 +155,7 @@
             gap: 12px;
             margin-bottom: 28px;
         }
+
         .select-field {
             flex: 1;
             background: var(--dark);
@@ -135,10 +168,12 @@
             cursor: pointer;
             -webkit-tap-highlight-color: transparent;
         }
+
         .select-field:focus {
             outline: none;
             border-color: var(--orange);
         }
+
         .select-field option {
             background: var(--mid);
             color: var(--text);
@@ -159,21 +194,40 @@
             -webkit-tap-highlight-color: transparent;
             touch-action: manipulation;
         }
-        .btn:active  { transform: scale(0.97); }
-        .btn-primary { background: var(--orange); color: var(--dark); font-weight: 700; }
-        .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+        .btn:active {
+            transform: scale(0.97);
+        }
+
+        .btn-primary {
+            background: var(--orange);
+            color: var(--dark);
+            font-weight: 700;
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+        }
 
         /* ── SPINNER ── */
         .spinner {
             display: none;
-            width: 30px; height: 30px;
-            border: 3px solid rgba(243,156,18,0.2);
+            width: 30px;
+            height: 30px;
+            border: 3px solid rgba(243, 156, 18, 0.2);
             border-top-color: var(--orange);
             border-radius: 50%;
             animation: spin .7s linear infinite;
             margin: 16px auto 0;
         }
-        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
 
         /* ── RÉSULTAT ── */
         #result {
@@ -181,6 +235,7 @@
             display: none;
             text-align: center;
         }
+
         #result h3 {
             font-family: 'IBM Plex Mono', monospace;
             font-size: clamp(0.75rem, 2.5vw, 0.88rem);
@@ -195,8 +250,9 @@
             background: #ffffff;
             border-radius: 12px;
             padding: 14px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
+
         #qrImage {
             display: block;
             width: clamp(160px, 45vw, 220px);
@@ -210,12 +266,14 @@
             margin-top: 20px;
             align-items: center;
         }
+
         .btn-outline {
             background: transparent;
             color: var(--orange);
             border: 1.5px solid var(--orange);
             max-width: 320px;
         }
+
         .btn-link {
             color: var(--orange);
             font-size: clamp(0.75rem, 2.2vw, 0.82rem);
@@ -224,7 +282,10 @@
             padding: 10px 0;
             display: inline-block;
         }
-        .btn-link:hover { text-decoration: underline; }
+
+        .btn-link:hover {
+            text-decoration: underline;
+        }
 
         /* ── FOOTER ── */
         footer {
@@ -237,164 +298,191 @@
 
         /* ── RESPONSIVE MOBILE < 400px ── */
         @media (max-width: 400px) {
-            .card { border-radius: 12px; }
-            .upload-zone { border-radius: 8px; }
+            .card {
+                border-radius: 12px;
+            }
+
+            .upload-zone {
+                border-radius: 8px;
+            }
         }
     </style>
 </head>
+
 <body>
 
-<header>
-    <h1>QR · PDF · E-TRIBCOM</h1>
-    <p>Certification documentaire avec filigrane officiel</p>
-</header>
+    <header>
+        <h1>QR · PDF · E-TRIBCOM</h1>
+        <p>Certification documentaire avec filigrane officiel</p>
+    </header>
 
-<div class="card">
+    <div class="card">
 
-    <!-- SECTION 1 : FICHIER -->
-    <div class="section-title">① Sélectionner le fichier PDF</div>
+        <!-- SECTION 1 : FICHIER -->
+        <div class="section-title">① Sélectionner le fichier PDF</div>
 
-    <div class="upload-zone" id="uploadZone">
-        <input type="file" id="pdfFile" accept="application/pdf" onchange="onFileChange(this)">
-        <div class="upload-icon">📄</div>
-        <p>Appuyez ou glissez votre PDF ici</p>
-        <div class="filename" id="filename"></div>
+        <div class="upload-zone" id="uploadZone">
+            <input type="file" id="pdfFile" accept="application/pdf" onchange="onFileChange(this)">
+            <div class="upload-icon">📄</div>
+            <p>Appuyez ou glissez votre PDF ici</p>
+            <div class="filename" id="filename"></div>
+        </div>
+
+        <!-- SECTION 2 : PÉRIODE -->
+        <div class="section-title">② Période du document</div>
+
+        <div class="periode-row">
+            <select id="periodeMois" class="select-field">
+                <option value="">Mois</option>
+                <option value="01">Janvier</option>
+                <option value="02">Février</option>
+                <option value="03">Mars</option>
+                <option value="04">Avril</option>
+                <option value="05">Mai</option>
+                <option value="06">Juin</option>
+                <option value="07">Juillet</option>
+                <option value="08">Août</option>
+                <option value="09">Septembre</option>
+                <option value="10">Octobre</option>
+                <option value="11">Novembre</option>
+                <option value="12">Décembre</option>
+            </select>
+            <select id="periodeAnnee" class="select-field">
+                <option value="">Année</option>
+            </select>
+        </div>
+
+        <!-- SECTION 3 : RÉFÉRENCE DU DOCUMENT -->
+        <div class="section-title">③ Référence du document</div>
+
+        <div class="periode-row">
+            <input type="text" id="refCode" class="select-field" placeholder="Code (ex: B12)" maxlength="10"
+                autocapitalize="characters">
+            <input type="text" id="refNumero" class="select-field" placeholder="Numéro (ex: 01505)" maxlength="10"
+                inputmode="numeric">
+        </div>
+
+        <!-- SECTION 4 : INFO FILIGRANE -->
+        <div class="section-title">④ Filigrane appliqué automatiquement</div>
+
+
+        <div class="wm-info">
+            Chaque document reçoit automatiquement :<br>
+            <strong>↗ COPIE HARMATTAN</strong> — en diagonale au centre<br>
+            <strong>↑ COPIE E-TRIBCOM</strong> — vertical sur le bord gauche
+        </div>
+
+        <!-- BOUTON PRINCIPAL -->
+        <button class="btn btn-primary" onclick="uploadFile()">
+            Générer le QR Code
+        </button>
+
+        <div class="spinner" id="spinner"></div>
     </div>
 
-    <!-- SECTION 2 : PÉRIODE -->
-    <div class="section-title">② Période du document</div>
-
-    <div class="periode-row">
-        <select id="periodeMois" class="select-field">
-            <option value="">Mois</option>
-            <option value="01">Janvier</option>
-            <option value="02">Février</option>
-            <option value="03">Mars</option>
-            <option value="04">Avril</option>
-            <option value="05">Mai</option>
-            <option value="06">Juin</option>
-            <option value="07">Juillet</option>
-            <option value="08">Août</option>
-            <option value="09">Septembre</option>
-            <option value="10">Octobre</option>
-            <option value="11">Novembre</option>
-            <option value="12">Décembre</option>
-        </select>
-        <select id="periodeAnnee" class="select-field">
-            <option value="">Année</option>
-        </select>
+    <!-- RÉSULTAT -->
+    <div id="result">
+        <h3>✅ DOCUMENT CERTIFIÉ — QR CODE PRÊT</h3>
+        <div class="qr-wrapper">
+            <img id="qrImage" src="" alt="QR Code">
+        </div>
+        <div class="result-actions">
+            <button class="btn btn-outline" onclick="downloadQR()">⬇ Télécharger le QR Code</button>
+            <a id="pdfLink" class="btn-link" href="#" target="_blank">📂 Ouvrir le document dans le lecteur</a>
+        </div>
     </div>
 
-    <!-- SECTION 3 : INFO FILIGRANE -->
-    <div class="section-title">③ Filigrane appliqué automatiquement</div>
+    <footer>E-TRIBCOM · Plateforme de certification documentaire</footer>
 
-    <div class="wm-info">
-        Chaque document reçoit automatiquement :<br>
-        <strong>↗ COPIE HARMATTAN</strong> — en diagonale au centre<br>
-        <strong>↑ COPIE E-TRIBCOM</strong> — vertical sur le bord gauche
-    </div>
+    <script>
+        let currentQRDataUrl = '';
 
-    <!-- BOUTON PRINCIPAL -->
-    <button class="btn btn-primary" onclick="uploadFile()">
-         Générer le QR Code
-    </button>
-
-    <div class="spinner" id="spinner"></div>
-</div>
-
-<!-- RÉSULTAT -->
-<div id="result">
-    <h3>✅ DOCUMENT CERTIFIÉ — QR CODE PRÊT</h3>
-    <div class="qr-wrapper">
-        <img id="qrImage" src="" alt="QR Code">
-    </div>
-    <div class="result-actions">
-        <button class="btn btn-outline" onclick="downloadQR()">⬇ Télécharger le QR Code</button>
-        <a id="pdfLink" class="btn-link" href="#" target="_blank">📂 Ouvrir le document dans le lecteur</a>
-    </div>
-</div>
-
-<footer>E-TRIBCOM · Plateforme de certification documentaire</footer>
-
-<script>
-    let currentQRDataUrl = '';
-
-    function populateAnnees() {
-        const select     = document.getElementById('periodeAnnee');
-        const anneeActuelle = new Date().getFullYear();
-        // Quelques années avant et après l'année en cours, par sécurité
-        for (let a = anneeActuelle - 50; a <= anneeActuelle + 1; a++) {
-            const opt = document.createElement('option');
-            opt.value = String(a);
-            opt.textContent = String(a);
-            if (a === anneeActuelle) opt.selected = true;
-            select.appendChild(opt);
-        }
-    }
-    populateAnnees();
-
-    function onFileChange(input) {
-        const file = input.files[0];
-        const el   = document.getElementById('filename');
-        el.textContent  = file ? file.name : '';
-        el.style.display = file ? 'block' : 'none';
-    }
-
-    function setLoading(on) {
-        document.getElementById('spinner').style.display = on ? 'block' : 'none';
-        document.querySelectorAll('.btn').forEach(b => b.disabled = on);
-    }
-
-    async function uploadFile() {
-        const fileInput = document.getElementById('pdfFile');
-        if (!fileInput.files[0]) {
-            alert('Veuillez d\'abord sélectionner un fichier PDF.');
-            return;
-        }
-
-        const mois  = document.getElementById('periodeMois').value;
-        const annee = document.getElementById('periodeAnnee').value;
-        if (!mois || !annee) {
-            alert('Veuillez sélectionner le mois et l\'année du document.');
-            return;
-        }
-        const periode = `${mois}-${annee}`;
-
-        const formData = new FormData();
-        formData.append('pdf', fileInput.files[0]);
-        formData.append('periode', periode);
-
-        setLoading(true);
-        document.getElementById('result').style.display = 'none';
-
-        try {
-            const res  = await fetch('/api/upload', { method: 'POST', body: formData });
-            const data = await res.json();
-
-            if (data.success) {
-                currentQRDataUrl = data.qrImage;
-                document.getElementById('qrImage').src  = data.qrImage;
-                document.getElementById('pdfLink').href = data.viewerUrl;
-                document.getElementById('result').style.display = 'block';
-                document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
-            } else {
-                alert('Erreur : ' + (data.error || 'inconnue'));
+        function populateAnnees() {
+            const select = document.getElementById('periodeAnnee');
+            const anneeActuelle = new Date().getFullYear();
+            // Quelques années avant et après l'année en cours, par sécurité
+            for (let a = anneeActuelle - 50; a <= anneeActuelle + 1; a++) {
+                const opt = document.createElement('option');
+                opt.value = String(a);
+                opt.textContent = String(a);
+                if (a === anneeActuelle) opt.selected = true;
+                select.appendChild(opt);
             }
-        } catch (e) {
-            alert('Impossible de joindre le serveur. Vérifiez votre connexion.');
-        } finally {
-            setLoading(false);
         }
-    }
+        populateAnnees();
 
-    function downloadQR() {
-        if (!currentQRDataUrl) return;
-        const a      = document.createElement('a');
-        a.href       = currentQRDataUrl;
-        a.download   = 'QR_ETRIBCOM.png';
-        a.click();
-    }
-</script>
+        function onFileChange(input) {
+            const file = input.files[0];
+            const el = document.getElementById('filename');
+            el.textContent = file ? file.name : '';
+            el.style.display = file ? 'block' : 'none';
+        }
+
+        function setLoading(on) {
+            document.getElementById('spinner').style.display = on ? 'block' : 'none';
+            document.querySelectorAll('.btn').forEach(b => b.disabled = on);
+        }
+
+        async function uploadFile() {
+            const fileInput = document.getElementById('pdfFile');
+            if (!fileInput.files[0]) {
+                alert('Veuillez d\'abord sélectionner un fichier PDF.');
+                return;
+            }
+
+            const mois = document.getElementById('periodeMois').value;
+            const annee = document.getElementById('periodeAnnee').value;
+            if (!mois || !annee) {
+                alert('Veuillez sélectionner le mois et l\'année du document.');
+                return;
+            }
+            const periode = `${mois}-${annee}`;
+
+            const refCode = document.getElementById('refCode').value.trim();
+            const refNumero = document.getElementById('refNumero').value.trim();
+            if (!refCode || !refNumero) {
+                alert('Veuillez renseigner le code et le numéro du document.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('pdf', fileInput.files[0]);
+            formData.append('periode', periode);
+            formData.append('code', refCode);
+            formData.append('numero', refNumero);
+
+            setLoading(true);
+            document.getElementById('result').style.display = 'none';
+
+            try {
+                const res = await fetch('/api/upload', { method: 'POST', body: formData });
+                const data = await res.json();
+
+                if (data.success) {
+                    currentQRDataUrl = data.qrImage;
+                    document.getElementById('qrImage').src = data.qrImage;
+                    document.getElementById('pdfLink').href = data.viewerUrl;
+                    document.getElementById('result').style.display = 'block';
+                    document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                } else {
+                    alert('Erreur : ' + (data.error || 'inconnue'));
+                }
+            } catch (e) {
+                alert('Impossible de joindre le serveur. Vérifiez votre connexion.');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        function downloadQR() {
+            if (!currentQRDataUrl) return;
+            const a = document.createElement('a');
+            a.href = currentQRDataUrl;
+            a.download = 'QR_ETRIBCOM.png';
+            a.click();
+        }
+    </script>
 
 </body>
+
 </html>
